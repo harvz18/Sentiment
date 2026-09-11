@@ -1,0 +1,14 @@
+.venv/
+.env
+.env.*
+!.env.example
+__pycache__/
+.pytest_cache/
+*.pyc
+data/raw/**
+data/processed/**
+models/**
+vector_store/**
+logs/**
+reports/**
+!**/.gitkeep

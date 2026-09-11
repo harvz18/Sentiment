@@ -1,0 +1,83 @@
+version: 1
+datasets:
+  - id: hilisenti
+    name: HiliSenti v1
+    author: Jessie James T. Jarder
+    url: https://huggingface.co/datasets/jjjardev/hilisenti-v1
+    doi: https://doi.org/10.57967/hf/8737
+    license: CC-BY-NC-SA-4.0
+    license_url: https://huggingface.co/datasets/jjjardev/hilisenti-v1/blob/27ae2471f1b3c6806b5da7ba532b42e6e3dcb84e/README.md
+    enabled: true
+    domain: multi-domain Hiligaynon
+    language: [hiligaynon, tagalog, english]
+    language_metadata: hiligaynon_code_switched
+    language_basis: Dataset-level coverage; per-row language is not annotated
+    label_mapping: {"0": negative, "1": exclude_neutral, "2": positive}
+    citation: "Jarder, Jessie James T. HiliSenti v1. DOI: 10.57967/hf/8737."
+    notes: Retain source splits; raw originals and original three-class processed files remain intact.
+    adapter: hilisenti
+    repository: jjjardev/hilisenti-v1
+    revision: 27ae2471f1b3c6806b5da7ba532b42e6e3dcb84e
+    files: [train.csv, val.csv, test.csv]
+    pool: language
+  - id: mams
+    name: MAMS ACSA
+    author: Qingnan Jiang, Lei Chen, Ruifeng Xu, Xiang Ao, Min Yang; Hugging Face mirror by Justin Siow
+    url: https://huggingface.co/datasets/justinsiow/mams-acsa
+    original_url: https://github.com/siat-nlp/MAMS-for-ABSA
+    doi: https://doi.org/10.18653/v1/D19-1654
+    license: Apache-2.0
+    license_url: https://github.com/siat-nlp/MAMS-for-ABSA/blob/master/LICENSE
+    enabled: true
+    domain: restaurant/service
+    language: [english]
+    language_metadata: english
+    language_basis: Dataset card
+    label_mapping: {positive: positive, negative: negative, neutral: exclude_neutral}
+    citation: "Jiang et al. (2019). A Challenge Dataset and Effective Models for Aspect-Based Sentiment Analysis. EMNLP-IJCNLP."
+    notes: Train-only mirror. Reject opposed positive/negative aspects; neutral-only rows excluded. One evaluative polarity alongside neutral aspects is retained with explicit derivation.
+    adapter: mams
+    repository: justinsiow/mams-acsa
+    revision: e33ce0c428b6966313d4931f272af1e338af09d6
+    files: [data/train-00000-of-00001.parquet]
+    pool: domain
+  - id: booking_hotel
+    name: Crawl Feeds Booking Hotel Reviews
+    author: Crawl Feeds
+    url: https://huggingface.co/datasets/crawlfeeds/Booking-Hotel-Reviews-Dataset
+    original_url: https://huggingface.co/datasets/crawlfeeds/Booking-Hotel-Reviews-Dataset
+    license: CC-BY-NC-4.0
+    license_url: https://huggingface.co/datasets/crawlfeeds/Booking-Hotel-Reviews-Dataset/blob/f39ceeede7b9d8a824909ebe88a7723ad31fa6c5/README.md
+    enabled: true
+    domain: hospitality
+    language: [english]
+    language_metadata: english
+    language_basis: Source language field (en)
+    label_mapping: {positive_review_text: positive, negative_review_text: negative}
+    citation: "Crawl Feeds (2025). Booking.com Hotel Reviews Dataset. Hugging Face."
+    notes: Published sample only, no platform scraping. Field-position labels are weak supervision; exclude placeholders and no-complaint negative fields. Both fields from one review share a split. Publisher license is not an independent audit of underlying platform rights.
+    adapter: booking
+    repository: crawlfeeds/Booking-Hotel-Reviews-Dataset
+    revision: f39ceeede7b9d8a824909ebe88a7723ad31fa6c5
+    files: [Crawlfeeds_booking-italy-hotel-reviews__limit-100000_language-en_after-2025-06_reviewer_country-3-items_20260410_063921.csv]
+    pool: domain
+  - id: uci_restaurants
+    name: UCI Sentiment Labelled Sentences - restaurant subset
+    author: Dimitrios Kotzias
+    url: https://archive.ics.uci.edu/dataset/331/sentiment+labelled+sentences
+    doi: https://doi.org/10.24432/C57604
+    license: CC-BY-4.0
+    license_url: https://archive.ics.uci.edu/dataset/331/sentiment+labelled+sentences
+    enabled: true
+    domain: restaurant/service
+    language: [english]
+    language_metadata: english
+    language_basis: Published English restaurant subset
+    label_mapping: {"0": negative, "1": positive}
+    citation: "Kotzias, D. (2015). Sentiment Labelled Sentences. UCI. DOI: 10.24432/C57604. Associated paper: From Group to Individual Labels Using Deep Features, KDD 2015."
+    notes: Import only the published Yelp restaurant sentence subset; exclude movie/product subsets. No direct Yelp scraping.
+    adapter: uci
+    download_url: https://archive.ics.uci.edu/static/public/331/sentiment+labelled+sentences.zip
+    archive_member: sentiment labelled sentences/yelp_labelled.txt
+    files: [sentiment_labelled_sentences.zip]
+    pool: domain

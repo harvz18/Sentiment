@@ -1,0 +1,1 @@
+# Intentionally empty. Preserve negators and sentiment-bearing particles.

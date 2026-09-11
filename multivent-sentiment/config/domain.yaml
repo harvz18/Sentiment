@@ -1,0 +1,117 @@
+version: 1
+notes: Handwritten domain descriptions are retrieval anchors, not fabricated labeled reviews. Scores are heuristics, not calibrated probabilities.
+semantic_weight: 0.55
+keyword_weight: 0.30
+category_weight: 0.15
+irrelevant_penalty: 0.30
+category_priors:
+  multi-domain Hiligaynon: 0.0
+  hospitality: 1.0
+  restaurant/service: 1.0
+descriptions:
+  - Customer feedback about catering, food taste, cakes, menus and food delivery at events.
+  - Reviews of event venues, hotel facilities, cleanliness, ambience and decorations.
+  - Customer reviews about helpful staff, service quality, reliability and communication.
+  - Feedback about booking reservations, price, value for money, refunds and payments.
+  - Complaints or praise about punctuality, delays, waiting time and arrival of event providers.
+  - Event photography, videography, makeup artists, coordinators, florists and decoration services.
+  - DJ, sound system, lighting, equipment rental, tables, chairs and event transportation.
+  - Serbisyo sang caterer, pagkaon, staff, lugar, presyo, bayad, booking kag oras sang event.
+  - Serbisyo, pagkain, tauhan, lugar, presyo, kalinisan at pagdating ng event supplier.
+keywords:
+  - catering
+  - caterer
+  - food
+  - meal
+  - restaurant
+  - waiter
+  - waitress
+  - menu
+  - cake
+  - breakfast
+  - dinner
+  - lunch
+  - service
+  - staff
+  - customer
+  - venue
+  - hotel
+  - room
+  - facilities
+  - ambience
+  - ambiance
+  - booking
+  - reservation
+  - price
+  - pricing
+  - value
+  - refund
+  - payment
+  - delivery
+  - delay
+  - late
+  - punctual
+  - cleanliness
+  - clean
+  - dirty
+  - communication
+  - accommodating
+  - reliable
+  - quality
+  - photography
+  - photographer
+  - videography
+  - makeup
+  - coordinator
+  - florist
+  - flowers
+  - decoration
+  - equipment
+  - rental
+  - chairs
+  - tables
+  - transport
+  - sound system
+  - lighting
+  - dj
+  - wedding
+  - reception
+  - serbisyo
+  - pagkaon
+  - pagkain
+  - manamit
+  - luto
+  - presyo
+  - bayad
+  - tinlo
+  - matinlo
+  - mahigko
+  - lugar
+  - oras
+  - dugay
+  - kadugay
+  - mahinay
+  - madasig
+  - malinis
+  - marumi
+  - masarap
+  - mahal
+irrelevant_keywords:
+  - governor
+  - mayor
+  - senator
+  - election
+  - senate
+  - congress
+  - police
+  - murder
+  - killed
+  - patay
+  - gintiro
+  - suspek
+  - shabu
+  - krimen
+  - pulis
+  - basketball
+  - football
+  - tournament

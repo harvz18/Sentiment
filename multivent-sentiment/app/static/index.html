@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Multivent · Sentiment Lab</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="/static/app.js" defer></script>
+</head>
+<body>
+<main>
+  <header><span class="eyebrow">MULTIVENT / RESEARCH</span><h1>Sentiment Lab<span>.</span></h1>
+    <p>Explore event-service feedback with Hiligaynon and hospitality references.</p>
+    <div id="health" role="status">Checking local pipeline…</div></header>
+  <section class="panel">
+    <form id="analysis-form">
+      <label for="feedback">Enter Multivent customer feedback</label>
+      <textarea id="feedback" name="feedback" maxlength="5000" rows="5" required placeholder="Nami gid sang service nila."></textarea>
+      <div class="actions"><span>Hiligaynon · Filipino · English · Code-switched</span><button id="analyze" type="submit">Analyze feedback →</button></div>
+    </form>
+    <p id="error" role="alert" hidden></p>
+  </section>
+  <section id="results" class="panel" hidden aria-live="polite">
+    <span class="eyebrow">BINARY SENTIMENT RESULT</span><h2 id="sentiment"></h2>
+    <p id="provider-note"></p><dl>
+      <div><dt>Confidence / vote share</dt><dd id="confidence"></dd></div>
+      <div><dt>Positive evidence</dt><dd id="positive-evidence"></dd></div>
+      <div><dt>Negative evidence</dt><dd id="negative-evidence"></dd></div>
+      <div><dt>Detected / estimated language</dt><dd id="language"></dd></div>
+      <div><dt>Dominant topic</dt><dd id="topic"></dd></div>
+      <div><dt>Provider</dt><dd id="provider"></dd></div>
+    </dl>
+    <h3>Topic keywords</h3><p id="keywords"></p><h3>Reason</h3><p id="reason"></p>
+    <h3>Retrieved Reference Examples</h3><div id="references"></div>
+    <details id="debug-panel"><summary>Why this verdict? Weighted evidence</summary>
+      <p id="debug-formula"></p><div class="table-scroll"><table id="evidence-table">
+        <thead><tr><th>Reference</th><th>Sentiment</th><th>Similarity</th><th>Domain</th><th>Source weight</th><th>Contribution</th></tr></thead>
+        <tbody></tbody>
+      </table></div>
+    </details>
+    <details><summary>JSON response</summary><pre id="json"></pre></details>
+  </section>
+  <footer>Academic experiment · HiliSenti, MAMS, Crawl Feeds &amp; UCI restaurant reviews · <a href="/docs">API documentation</a></footer>
+</main>
+</body>
+</html>

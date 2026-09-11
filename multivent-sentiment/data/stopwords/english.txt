@@ -1,0 +1,16 @@
+# Conservative English articles/prepositions/conjunction. LDA features only.
+# No negators, sentiment adjectives, or Hiligaynon particles removed.
+a
+an
+the
+of
+to
+in
+on
+at
+for
+with
+from
+by
+as
+and

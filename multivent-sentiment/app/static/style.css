@@ -1,0 +1,14 @@
+:root{font-family:Inter,Segoe UI,system-ui,sans-serif;color:#183a3a;background:#f2f5f1;font-synthesis:none}
+*{box-sizing:border-box}body{margin:0}main{max-width:960px;margin:0 auto;padding:52px 24px}
+header{margin-bottom:32px}.eyebrow{font-size:.73rem;font-weight:700;letter-spacing:.16em;color:#496b64}
+h1{font-size:clamp(2.4rem,6vw,4rem);line-height:1.08;margin:15px 0}h1 span{color:#ba5f32}
+header p{color:#526763}#health{font-size:.85rem;margin-top:20px}.panel{background:#fff;border:1px solid #dae3da;border-radius:16px;padding:28px;margin-bottom:24px;box-shadow:0 4px 20px #143d2705}
+label{display:block;font-weight:600;margin-bottom:14px}textarea{width:100%;resize:vertical;padding:16px;border:1px solid #bdcfc4;border-radius:8px;font:inherit;line-height:1.6;background:#fafcf9;color:inherit}
+textarea:focus,button:focus-visible{outline:3px solid #a4c5af;outline-offset:3px}.actions{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:16px}.actions span{color:#63766e;font-size:.78rem}
+button{background:#204f40;color:#fff;border:0;border-radius:8px;padding:14px 20px;font:inherit;font-weight:600;cursor:pointer}button:disabled{opacity:.65;cursor:wait}
+#error{color:#953927;padding:12px;background:#fff0e9;border-radius:8px}h2{font-size:2.1rem;margin:12px 0;text-transform:capitalize}h3{font-size:.95rem;margin-top:26px}
+dl{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin:28px 0}dt{font-size:.78rem;color:#63766e;margin-bottom:7px}dd{margin:0;font-weight:600;overflow-wrap:anywhere}
+#keywords,#reason{line-height:1.7}.reference{padding:16px 0;border-top:1px solid #e4ebe3}.reference p{line-height:1.65;margin:0 0 10px}.reference small{color:#64766c}.badge{display:inline-block;padding:4px 8px;border-radius:4px;background:#edf3ec;font-size:.75rem;font-weight:700;margin-right:10px}
+details{margin-top:26px}summary{cursor:pointer;color:#416251}pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:.8rem;background:#f4f7f1;padding:16px;border-radius:8px}footer{font-size:.78rem;color:#63766e;line-height:1.8}a{color:#315a46}
+@media(max-width:600px){main{padding:30px 16px}.panel{padding:20px}.actions{align-items:stretch;flex-direction:column}dl{grid-template-columns:1fr}button{width:100%}}
+[data-sentiment="positive"]{color:#22603e}[data-sentiment="negative"]{color:#9b362b}.table-scroll{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:.78rem}th,td{text-align:left;padding:10px;border-bottom:1px solid #e4ebe3}th{font-weight:600}#debug-formula{font-size:.84rem;line-height:1.7}
