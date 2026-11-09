@@ -15,6 +15,7 @@ class Settings(BaseModel):
     ai_provider: Literal["rag_fallback", "mock", "openai"] = "rag_fallback"
     openai_api_key: SecretStr = SecretStr("")
     openai_model: str = ""
+    analysis_api_key: SecretStr = SecretStr("")
     binary_sentiment: bool = True
     rag_top_k: int = Field(6, ge=1, le=100)
     rag_language_k: int = Field(2, ge=0, le=100)

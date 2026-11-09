@@ -1,11 +1,12 @@
 """Public API and provider contracts."""
-from typing import Literal
+from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from app.preprocessing.text_cleaner import normalize_text
 
 Sentiment = Literal["negative", "positive"]
+FeedbackComment = Annotated[str, Field(min_length=1, max_length=5000, strict=True)]
 
 
 class FeedbackRequest(BaseModel):
@@ -22,6 +23,55 @@ class FeedbackRequest(BaseModel):
 
 class RetrievalRequest(FeedbackRequest):
     top_k: int | None = Field(None, ge=1, le=100, strict=True)
+
+
+class NormalizationRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    text: str = Field(min_length=1, max_length=5000, strict=True)
+
+    @field_validator("text")
+    @classmethod
+    def meaningful_text(cls, value: str) -> str:
+        if not normalize_text(value) or not any(c.isalnum() for c in value):
+            raise ValueError("Text must contain letters or numbers")
+        return value
+
+
+class NormalizationChangeInfo(BaseModel):
+    original: str
+    normalized: str
+    source: str
+
+
+class NormalizationResponse(BaseModel):
+    original: str
+    normalized: str
+    changes: list[str]
+    normalizations: list[NormalizationChangeInfo]
+
+
+class FeedbackSummaryRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    service_name: str = Field(min_length=1, max_length=200, strict=True)
+    service_category: str = Field(min_length=1, max_length=120, strict=True)
+    sentiment: Sentiment
+    comments: list[FeedbackComment] = Field(min_length=1, max_length=200)
+    previous_summary: str | None = Field(None, min_length=1, max_length=600, strict=True)
+    previous_feedback_count: int = Field(0, ge=0, strict=True)
+
+    @model_validator(mode="after")
+    def validate_summary_input(self):
+        if sum(len(comment) for comment in self.comments) > 60000:
+            raise ValueError("Combined comments must not exceed 60000 characters")
+        if self.previous_summary is None and self.previous_feedback_count != 0:
+            raise ValueError("previous_feedback_count requires previous_summary")
+        return self
+
+
+class FeedbackSummaryResponse(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    summary: str = Field(min_length=10, max_length=600)
+    provider: str
 
 
 class TopicInfo(BaseModel):
@@ -98,6 +148,9 @@ class ProviderResult(BaseModel):
 
 class AnalysisResponse(ProviderResult):
     feedback: str
+    text_original: str
+    text_normalized: str
+    normalizations: list[NormalizationChangeInfo]
     topic: TopicInfo
     rag: RetrievalResult
     debug: FallbackDebug | None = None

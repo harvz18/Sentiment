@@ -7,6 +7,7 @@ from time import perf_counter
 
 from app.config.settings import Settings
 from app.preprocessing.text_cleaner import prepare_text
+from app.preprocessing.text_normalizer import normalize_informal_text
 from app.rag.retrieval_service import RetrievalService
 from app.schemas.sentiment import AnalysisResponse, FeedbackRequest, RetrievalResult, Sentiment
 from app.sentiment.base_provider import SentimentProvider
@@ -25,18 +26,24 @@ class AnalysisService:
     def analyze(self, feedback: str, ground_truth: Sentiment | None = None, debug: bool = False) -> AnalysisResponse:
         start = perf_counter()
         original = FeedbackRequest(feedback=feedback).feedback
-        cleaned = prepare_text(original, self.settings.enable_pii_sanitization)
+        normalization = normalize_informal_text(original)
+        cleaned = prepare_text(normalization.normalized, self.settings.enable_pii_sanitization)
         topic = self.lda.infer(cleaned)
         references = self.retrieval.retrieve(cleaned, self.settings.rag_top_k)
         # Original language preserved. Optional PII mode masks before provider transmission.
         provider_text = cleaned if self.settings.enable_pii_sanitization else original
         verdict = self.provider.analyze(provider_text, topic, references)
-        response = AnalysisResponse(feedback=original, **verdict.model_dump(), topic=topic,
+        response = AnalysisResponse(feedback=original, text_original=original,
+                                    text_normalized=normalization.normalized,
+                                    normalizations=[change.__dict__ for change in normalization.changes],
+                                    **verdict.model_dump(), topic=topic,
                                     rag=RetrievalResult(retrieved_examples=references),
                                     debug=evidence_breakdown(references) if debug and verdict.provider == "rag_weighted_fallback" else None)
         if self.settings.enable_analysis_logging:
             event = {"timestamp": datetime.now(timezone.utc).isoformat(),
-                     "feedback": provider_text, "topic": topic.model_dump(),
+                     "feedback": provider_text, "text_normalized": cleaned,
+                     "normalizations": [change.__dict__ for change in normalization.changes],
+                     "topic": topic.model_dump(),
                      "retrieved_example_ids": [e.id for e in references], "provider": verdict.provider,
                      "predicted_sentiment": verdict.sentiment, "confidence": verdict.confidence,
                      "scores": verdict.scores.model_dump(),

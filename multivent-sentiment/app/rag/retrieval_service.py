@@ -1,5 +1,6 @@
 from app.config.settings import Settings
 from app.preprocessing.text_cleaner import prepare_text
+from app.preprocessing.text_normalizer import normalize_informal_text
 from app.rag.embedding_service import EmbeddingProvider
 from app.rag.vector_store import VectorStore
 from app.schemas.sentiment import ReferenceExample
@@ -13,7 +14,8 @@ class RetrievalService:
     def retrieve(self, feedback: str, top_k: int = 6) -> list[ReferenceExample]:
         if not 1 <= top_k <= 100:
             raise ValueError("top_k must be between 1 and 100")
-        text = prepare_text(feedback, self.settings.enable_pii_sanitization)
+        normalized = normalize_informal_text(feedback).normalized
+        text = prepare_text(normalized, self.settings.enable_pii_sanitization)
         vector = self.embeddings.encode([text])[0]
         candidates = {}
         for pool in ("language", "domain"):

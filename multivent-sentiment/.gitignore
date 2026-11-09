@@ -11,4 +11,5 @@ models/**
 vector_store/**
 logs/**
 reports/**
+!reports/normalization_sources.md
 !**/.gitkeep

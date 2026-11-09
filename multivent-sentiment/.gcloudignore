@@ -1,0 +1,14 @@
+.git/
+.venv/
+.env
+.env.*
+__pycache__/
+.pytest_cache/
+logs/
+reports/
+tests/
+data/raw/
+models/embeddings/cache/
+models/embeddings/domain_score_cache/
+models/embeddings/hf_home/
+*.pyc

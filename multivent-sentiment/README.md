@@ -89,6 +89,7 @@ estimated confidence, language, topic, keywords, provider, reason, and reference
 | GET | `/` | Status JSON, or testing UI for a browser |
 | GET | `/health` | Actual loaded components, selected provider, key presence |
 | POST | `/analyze` | Full pipeline |
+| POST | `/normalize` | Audit informal Hiligaynon/Filipino normalization |
 | POST | `/retrieve` | References; optional `top_k` from 1 to 100 |
 | POST | `/topic` | Dominant LDA topic |
 | GET | `/topics` | All topic terms and editable human names |
@@ -116,6 +117,27 @@ Invalid input returns 422; missing models/data return actionable 503 errors.
 Provider failures return 502. Health remains available with `status: degraded`
 when components are unavailable. `openai_configured` means a nonblank key exists;
 it does not claim the key was authenticated.
+
+## Informal feedback normalization
+
+Inference applies conservative, token-boundary-aware normalization before LDA topic
+inference and embedding/RAG retrieval. The response preserves `text_original`, exposes
+`text_normalized`, and lists each auditable normalization with its source. The original
+feedback remains the provider input unless optional PII sanitization is enabled.
+
+Mappings live in `app/preprocessing/dictionaries/`. FiliSenti's Apache-2.0 normalization
+implementation is the reference for selected Filipino/Hiligaynon mappings and safe
+structural rules. Filipino Slang Norm is reference-only because its declared license is
+unknown; none of its records are redistributed. See
+[`reports/normalization_sources.md`](reports/normalization_sources.md) for provenance,
+loaded mappings, exclusions, and the licensing review.
+
+Example:
+
+```powershell
+$body = @{ text = "Nmi gd ila service pero dugay lg" } | ConvertTo-Json
+Invoke-RestMethod -Uri "http://127.0.0.1:8000/normalize" -Method Post -ContentType "application/json" -Body $body
+```
 
 ## Artifacts and module layout
 
@@ -227,6 +249,12 @@ and returns structured sentiment, estimated confidence, language, and reason. Th
 response retains the actual LDA topic rather than letting the AI rename it. Activating
 OpenAI sends feedback and retrieved examples to that external service; review PII first.
 API keys are never serialized into experiment logs or responses.
+
+For a deployed API, set `ANALYSIS_API_KEY` to a long random value and send the same value
+in the `X-Analysis-Key` request header. When configured, `/analyze`, `/normalize`,
+`/retrieve`, `/topic`, `/topics`, and `/dataset/stats` reject missing or invalid keys;
+`/health` remains public for service monitoring. The local browser test page is intended
+for development and does not attach this production header.
 
 ## Evaluation
 

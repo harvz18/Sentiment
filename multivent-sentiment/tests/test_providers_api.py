@@ -7,11 +7,13 @@ from fastapi.testclient import TestClient
 from pydantic import SecretStr
 
 from app.main import create_app
-from app.schemas.sentiment import BinaryScores, ReferenceExample, TopicInfo
+from app.schemas.sentiment import (BinaryScores, FeedbackSummaryRequest,
+                                   ReferenceExample, TopicInfo)
 from app.sentiment.base_provider import ProviderError
 from app.sentiment.factory import create_provider
 from app.sentiment.heuristic_provider import HeuristicSentimentProvider
-from app.sentiment.openai_provider import OpenAISentimentProvider, OpenAIVerdict
+from app.sentiment.openai_provider import (OpenAIFeedbackSummary,
+                                           OpenAISentimentProvider, OpenAIVerdict)
 
 
 def example(sentiment, score):
@@ -63,6 +65,9 @@ def test_all_routes(runtime):
         result = client.post("/analyze", json={"feedback": text})
         assert result.status_code == 200, result.text
         assert result.json()["feedback"] == text
+        assert result.json()["text_original"] == text
+        assert result.json()["text_normalized"] == "Nami gid ang food."
+        assert result.json()["normalizations"][0]["source"] == "whitespace_cleanup"
         assert result.json()["provider"] == "rag_weighted_fallback"
         assert result.json()["sentiment"] in {"positive", "negative"}
         assert "debug" not in result.json()
@@ -80,6 +85,21 @@ def test_missing_artifacts_still_serves_health(settings):
         assert client.get("/health").json()["status"] == "degraded"
         assert client.post("/analyze", json={"feedback": "Nami gid"}).status_code == 503
         assert client.get("/dataset/stats").status_code == 503
+
+
+def test_analysis_api_key_protects_model_routes(runtime):
+    runtime.settings.analysis_api_key = SecretStr("edge-secret")
+    with TestClient(create_app(runtime=runtime)) as client:
+        assert client.get("/health").status_code == 200
+        assert client.post("/analyze", json={"feedback": "Nami gid"}).status_code == 401
+        assert client.post("/normalize", json={"text": "Nmi gd"}).status_code == 401
+        assert client.get("/topics", headers={"X-Analysis-Key": "wrong"}).status_code == 401
+        response = client.post(
+            "/analyze",
+            headers={"X-Analysis-Key": "edge-secret"},
+            json={"feedback": "Nami gid"},
+        )
+        assert response.status_code == 200
 
 
 def test_experiment_logging(runtime):
@@ -104,3 +124,50 @@ def test_openai_adapter_contract_without_network(runtime):
     parse.return_value = SimpleNamespace(status="completed", output_parsed=None)
     with pytest.raises(ProviderError):
         provider.analyze("feedback", runtime.lda.infer("dugay"), [])
+
+
+def test_openai_summary_contract_without_network():
+    provider = OpenAISentimentProvider.__new__(OpenAISentimentProvider)
+    provider.model = "test-model"
+    parsed = OpenAIFeedbackSummary(
+        summary="A client says the catering team delivered flavorful food on time."
+    )
+    parse = Mock(return_value=SimpleNamespace(status="completed", output_parsed=parsed))
+    provider.client = SimpleNamespace(responses=SimpleNamespace(parse=parse))
+    request = FeedbackSummaryRequest(
+        service_name="Sample Catering",
+        service_category="Catering",
+        sentiment="positive",
+        comments=["Namit ang food kag on time ang delivery."],
+    )
+
+    result = provider.summarize(request)
+
+    assert result.provider == "openai"
+    assert result.summary.startswith("A client says")
+    call = parse.call_args.kwargs
+    assert call["store"] is False and call["text_format"] is OpenAIFeedbackSummary
+    payload = json.loads(call["input"][1]["content"])
+    assert payload["service_category"] == "Catering"
+
+
+def test_summary_route_is_key_protected(runtime):
+    runtime.settings.analysis_api_key = SecretStr("edge-secret")
+    runtime.provider.summarize = Mock(return_value={
+        "summary": "A client says the service was reliable.",
+        "provider": "mock",
+    })
+    body = {
+        "service_name": "Sample Service",
+        "service_category": "Catering",
+        "sentiment": "positive",
+        "comments": ["Reliable service."],
+    }
+    with TestClient(create_app(runtime=runtime)) as client:
+        assert client.post("/summarize", json=body).status_code == 401
+        response = client.post(
+            "/summarize",
+            headers={"X-Analysis-Key": "edge-secret"},
+            json=body,
+        )
+        assert response.status_code == 200
